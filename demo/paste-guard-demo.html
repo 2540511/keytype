@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>粘贴拦截测试页 · KeyType</title>
+<style>
+  :root {
+    --bg: #0d0f13;
+    --card: #161a21;
+    --card-2: #1c212a;
+    --line: #2a303c;
+    --text: #f1f4f8;
+    --muted: #8c95a5;
+    --dim: #5d6675;
+    --accent: #ffb454;
+    --green: #72e3a6;
+    --red: #ff7a7a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--text);
+    background:
+      radial-gradient(1100px 600px at 12% -10%, rgba(255, 180, 84, .13), transparent 65%),
+      radial-gradient(800px 500px at 100% 0%, rgba(114, 227, 166, .07), transparent 60%),
+      var(--bg);
+    font-family: "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif;
+    display: grid;
+    place-items: center;
+    padding: 32px 18px;
+  }
+  .wrap { width: min(780px, 100%); }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 22px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .brand .mark {
+    width: 38px; height: 38px; border-radius: 11px;
+    display: grid; place-items: center;
+    background: linear-gradient(160deg, #ffc372, #e49330);
+    color: #251708; font-weight: 800; font-size: 22px;
+    box-shadow: 0 8px 24px rgba(255, 180, 84, .18);
+  }
+  .brand strong { color: var(--text); font-size: 16px; letter-spacing: .2px; }
+  .brand span { color: var(--dim); }
+  h1 { font-size: clamp(24px, 4vw, 38px); letter-spacing: -1px; margin: 0 0 10px; }
+  .lead { color: var(--muted); line-height: 1.75; margin: 0 0 22px; font-size: 14px; }
+  .card {
+    background: rgba(22, 26, 33, .92);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, .34);
+  }
+  .field-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 9px; }
+  .field-head label { font-size: 14px; font-weight: 700; }
+  .badge {
+    color: var(--green); background: rgba(114, 227, 166, .09);
+    border: 1px solid rgba(114, 227, 166, .22);
+    border-radius: 999px; padding: 4px 10px; font-size: 11px;
+  }
+  textarea {
+    width: 100%; min-height: 190px; resize: vertical;
+    color: var(--text); background: #101319;
+    border: 1px solid #303644; border-radius: 14px;
+    padding: 14px 15px; font: 15px/1.8 "Microsoft YaHei UI", "Microsoft YaHei", sans-serif;
+    outline: none; caret-color: var(--accent);
+    transition: border-color .15s, box-shadow .15s;
+  }
+  textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255, 180, 84, .12); }
+  textarea::placeholder { color: #4e5868; }
+  .stats {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+    margin-top: 14px;
+  }
+  .stat {
+    background: var(--card-2); border: 1px solid #242b38;
+    border-radius: 12px; padding: 10px 11px;
+  }
+  .stat b { display: block; font-size: 18px; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .stat span { color: var(--dim); font-size: 10px; }
+  .stat.paste b { color: var(--red); }
+  .stat.typed b { color: var(--accent); }
+  .row { display: flex; gap: 9px; flex-wrap: wrap; margin-top: 14px; }
+  button {
+    border: 0; border-radius: 11px; padding: 10px 15px; cursor: pointer;
+    color: #251708; background: var(--accent); font: 600 13px "Microsoft YaHei UI", sans-serif;
+    transition: transform .12s, filter .12s;
+  }
+  button:hover { filter: brightness(1.08); transform: translateY(-1px); }
+  button.ghost {
+    color: var(--muted); background: var(--card-2); border: 1px solid #2b3340;
+  }
+  .steps {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+    margin-top: 18px;
+  }
+  .step {
+    background: rgba(28, 33, 42, .7); border: 1px solid #242b38;
+    border-radius: 13px; padding: 12px; color: var(--muted);
+    font-size: 12px; line-height: 1.65;
+  }
+  .step em { display: block; color: var(--accent); font-style: normal; font-weight: 800; font-size: 11px; margin-bottom: 4px; }
+  .note { color: var(--dim); font-size: 11px; line-height: 1.7; margin-top: 16px; }
+  .toast {
+    position: fixed; left: 50%; top: 22px; transform: translate(-50%, -16px);
+    background: #2a1719; color: #ffb5b5; border: 1px solid #593034;
+    padding: 10px 16px; border-radius: 999px; font-size: 13px;
+    opacity: 0; pointer-events: none; transition: opacity .18s, transform .18s;
+    box-shadow: 0 12px 40px rgba(0,0,0,.35); z-index: 10;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+  .last-event { color: var(--muted); font-size: 12px; margin-top: 10px; }
+  .last-event code { color: var(--text); background: #101319; padding: 2px 6px; border-radius: 6px; }
+  @media (max-width: 620px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .steps { grid-template-columns: 1fr; }
+    .card { padding: 15px; }
+  }
+</style>
+</head>
+<body>
+<div class="toast" id="toast">检测到粘贴，已拦截</div>
+<main class="wrap">
+  <div class="brand">
+    <div class="mark">K</div>
+    <div><strong>KeyType</strong> <span>· 测试目标</span></div>
+  </div>
+
+  <h1>只允许键盘输入的页面</h1>
+  <p class="lead">
+    这个输入框会拦截 Ctrl+V、右键粘贴和拖放，模拟常见的“禁止粘贴”页面。
+    用 KeyType 输入时，网页收到的是正常键盘事件，所以可以正常写入。
+  </p>
+
+  <section class="card">
+    <div class="field-head">
+      <label for="note">模拟输入框</label>
+      <div class="badge" id="statusBadge">等待输入</div>
+    </div>
+    <textarea id="note" spellcheck="false" placeholder="先按 Ctrl+V 试试，会被拦截。&#10;然后用 KeyType 把文字敲进来。"></textarea>
+
+    <div class="stats">
+      <div class="stat"><span>当前字符数</span><b id="count">0</b></div>
+      <div class="stat typed"><span>键盘输入事件</span><b id="typed">0</b></div>
+      <div class="stat paste"><span>粘贴拦截次数</span><b id="blocked">0</b></div>
+      <div class="stat"><span>最近输入类型</span><b id="lastType" style="font-size:12px;line-height:1.6">—</b></div>
+    </div>
+
+    <div class="last-event">最近事件：<code id="lastEvent">—</code></div>
+
+    <div class="row">
+      <button class="ghost" id="clear">清空输入框</button>
+      <button class="ghost" id="copy">复制测试文字</button>
+      <button id="focus">聚焦输入框</button>
+    </div>
+
+    <div class="steps">
+      <div class="step"><em>01</em>先在 KeyType 里放入一段文字。</div>
+      <div class="step"><em>02</em>点击「开始键入」，马上切换回这个页面。</div>
+      <div class="step"><em>03</em>把光标点在输入框里，3 秒后文字会逐字出现。</div>
+    </div>
+    <p class="note">
+      提示：如果输入没有出现，检查目标页面是否获得了键盘焦点；以管理员权限运行的窗口需要以管理员权限启动 KeyType。
+      这个测试页只是本地 HTML，不会上传任何内容。
+    </p>
+  </section>
+</main>
+
+<script>
+  const note = document.getElementById('note');
+  const countEl = document.getElementById('count');
+  const typedEl = document.getElementById('typed');
+  const blockedEl = document.getElementById('blocked');
+  const lastTypeEl = document.getElementById('lastType');
+  const lastEventEl = document.getElementById('lastEvent');
+  const badge = document.getElementById('statusBadge');
+  const toast = document.getElementById('toast');
+
+  let blockedCount = 0;
+  let typedCount = 0;
+  let toastTimer = 0;
+
+  function showToast(text) {
+    toast.textContent = text;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 1700);
+  }
+
+  function blocked(message) {
+    blockedCount += 1;
+    blockedEl.textContent = String(blockedCount);
+    lastEventEl.textContent = message;
+    showToast('检测到粘贴，已拦截');
+    refreshBadge();
+  }
+
+  function refreshBadge() {
+    const hasText = note.value.length > 0;
+    badge.textContent = hasText ? '键盘输入已接受' : '等待输入';
+    badge.style.color = hasText ? 'var(--green)' : 'var(--muted)';
+    badge.style.background = hasText ? 'rgba(114, 227, 166, .09)' : 'rgba(140, 149, 165, .07)';
+    badge.style.borderColor = hasText ? 'rgba(114, 227, 166, .22)' : 'rgba(140, 149, 165, .18)';
+  }
+
+  // 典型网页的粘贴拦截：paste / drop / beforeinput 三条路径都堵住。
+  note.addEventListener('paste', (event) => {
+    event.preventDefault();
+    blocked('paste（Ctrl+V / 右键粘贴）');
+  });
+
+  note.addEventListener('drop', (event) => {
+    event.preventDefault();
+    blocked('drop（拖放文字）');
+  });
+
+  note.addEventListener('beforeinput', (event) => {
+    lastTypeEl.textContent = event.inputType || '—';
+    if (event.inputType === 'insertFromPaste' || event.inputType === 'insertFromDrop') {
+      event.preventDefault();
+      blocked(event.inputType);
+    }
+  });
+
+  note.addEventListener('input', (event) => {
+    typedCount += 1;
+    typedEl.textContent = String(typedCount);
+    countEl.textContent = String(note.value.length);
+    lastEventEl.textContent = 'input（' + (event.inputType || 'insertText') + '）';
+    lastTypeEl.textContent = event.inputType || 'insertText';
+    refreshBadge();
+  });
+
+  note.addEventListener('keydown', (event) => {
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'v') {
+      lastEventEl.textContent = 'keydown（Ctrl+V）';
+    }
+  });
+
+  document.getElementById('clear').addEventListener('click', () => {
+    note.value = '';
+    countEl.textContent = '0';
+    typedCount = 0;
+    typedEl.textContent = '0';
+    lastEventEl.textContent = '—';
+    lastTypeEl.textContent = '—';
+    refreshBadge();
+    note.focus();
+  });
+
+  document.getElementById('focus').addEventListener('click', () => note.focus());
+
+  document.getElementById('copy').addEventListener('click', async () => {
+    const sample = '这是一段测试文字：中文、English、123、Emoji 😀。\n尝试用 Ctrl+V 粘贴，会被这个页面拦截；用 KeyType 键入则可以成功。';
+    try {
+      await navigator.clipboard.writeText(sample);
+      showToast('测试文字已复制，去试试 Ctrl+V');
+    } catch (error) {
+      const helper = document.createElement('textarea');
+      helper.value = sample;
+      helper.style.position = 'fixed';
+      helper.style.opacity = '0';
+      document.body.appendChild(helper);
+      helper.select();
+      document.execCommand('copy');
+      helper.remove();
+      showToast('测试文字已复制，去试试 Ctrl+V');
+    }
+  });
+
+  refreshBadge();
+</script>
+</body>
+</html>

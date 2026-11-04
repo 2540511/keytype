@@ -1,0 +1,67 @@
+name: Bug report
+description: 报告 KeyType 无法输入、启动失败或其他问题
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢反馈。请尽量附上 KeyType 状态栏截图和复现步骤。
+        如果涉及权限问题，请先确认是否使用了「以管理员身份启动 KeyType.cmd」。
+
+  - type: input
+    id: windows
+    attributes:
+      label: Windows 版本
+      placeholder: "例如：Windows 11 23H2 / Windows 10 22H2"
+    validations:
+      required: true
+
+  - type: input
+    id: target
+    attributes:
+      label: 目标程序
+      description: 浏览器、在线判题平台、客户端名称或版本
+      placeholder: "例如：Edge 131 / 某在线判题平台"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: launch
+    attributes:
+      label: KeyType 启动方式
+      options:
+        - 普通启动（启动 KeyType.cmd / KeyType.exe）
+        - 以管理员身份启动
+        - 从 Python 源码运行
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      description: 你点了什么、何时切换窗口、是否看到倒计时
+      placeholder: |
+        1. 在 KeyType 放入文字
+        2. 点击开始键入
+        3. 切换到目标页面并点击输入框
+        4. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: status
+    attributes:
+      label: KeyType 状态
+      description: 状态栏提示、是否出现“目标窗口权限更高”或“焦点还在 KeyType”
+    validations:
+      required: false
+
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: 截图
+      description: 可直接拖入图片
+    validations:
+      required: false

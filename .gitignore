@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# PyInstaller
+build/
+dist/
+*.spec
+
+# Local settings and diagnostics
+keytype-settings.json
+debug.log
+*.log
+.tmp*
+.tmp-edge-profile/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,4 @@
+# 运行时只用 Python 标准库（tkinter + ctypes），无需安装依赖。
+# 打包 exe 和重新生成图标需要以下开发依赖。
+pyinstaller>=6.16
+pillow>=10.1

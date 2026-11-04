@@ -74,3 +74,13 @@ gh release create v1.0.0 `
 - `CHANGELOG.md`
 
 升级版本时一起修改，避免 Release 文件名混乱。
+
+## 6. 仓库设置建议
+
+在 GitHub 仓库首页点 **About** 的齿轮，可以填写：
+
+- Description：`Windows 键盘代打：用 SendInput 绕过网页禁止粘贴，支持全局热键、中文和 Emoji。`
+- Website：可留空，或填 Release 页面
+- Topics：`windows`、`sendinput`、`clipboard`、`automation`、`python`、`tkinter`、`paste-bypass`
+
+如果有条件，建议在 Releases 里保留至少一个可运行的 zip，并在仓库简介里直接引导用户下载。

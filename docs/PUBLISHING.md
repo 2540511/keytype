@@ -4,12 +4,15 @@
 
 ## 1. 上传源码
 
-本目录已经初始化为 `main` 分支的 git 仓库，并完成了首次提交。只需要创建空的 GitHub 仓库，然后执行（把 `USERNAME` 换成你的 GitHub 用户名）：
+本目录已经初始化为 `main` 分支的 git 仓库，并完成了首次提交。在 GitHub 新建一个**空仓库**（不要勾选自动生成 README、.gitignore 或 License），然后执行（把 `USERNAME` 换成你的 GitHub 用户名）：
 
 ```powershell
 git remote add origin https://github.com/USERNAME/keytype.git
 git push -u origin main
+git push origin v1.0.0
 ```
+
+本地已经创建了 `v1.0.0` tag；如果暂时不发布 Release，也可以先只推送 `main`。
 
 如果以后在一个还没有 git 历史的目录中重新开始，再使用：
 
